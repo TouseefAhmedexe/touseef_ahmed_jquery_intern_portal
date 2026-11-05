@@ -59,5 +59,4 @@ textContent.
 - Plain JavaScript is enough for new code. jQuery is useful when maintaining older code.
 
 ## How to run
-Open the folder in Visual Studio Code and use Live Server. Modules and fetch do not work when
-an HTML file is opened by double-clicking it
+Open the folder in Visual Studio Code and use Live Server. Modules and fetch do not work when an HTML file is opened by double-clicking it
