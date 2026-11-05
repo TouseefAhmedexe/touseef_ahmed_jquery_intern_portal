@@ -60,4 +60,4 @@ textContent.
 
 ## How to run
 Open the folder in Visual Studio Code and use Live Server. Modules and fetch do not work when
-an HTML file is opened by double-clicking it.
+an HTML file is opened by double-clicking it
