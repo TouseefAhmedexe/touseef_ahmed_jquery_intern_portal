@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Small internship portal with an assignment list, filters and an application form, written in vanilla JavaScript.">
+    <meta name="author" content="Touseef Ahmed">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/vanilla/app.js"></script>
+    <title>Intern Portal | Vanilla JavaScript</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header__inner">
+            <h1 class="site-title">Intern Portal</h1>
+            <nav class="site-nav">
+                <ul>
+                    <li><a href="#assignments">Assignments</a></li>
+                    <li><a href="#apply">Apply</a></li>
+                    <li><a href="jquery.html">jQuery version</a></li>
+                </ul>
+            </nav>
+            <button class="button" type="button" id="theme-button">Dark theme</button>
+        </div>
+        <p class="site-intro">This is the vanilla JavaScript version. All assignment data on this page is sample data.</p>
+    </header>
+
+    <main>
+        <section class="section" id="assignments">
+            <h2>Assignments</h2>
+            <p id="summary-text"></p>
+            <form class="filters" id="filter-form">
+                <div class="field">
+                    <label for="search-input">Search</label>
+                    <input type="search" id="search-input" name="q" placeholder="Example: layout" autocomplete="off">
+                </div>
+                <div class="field">
+                    <label for="status-select">Status</label>
+                    <select id="status-select" name="status">
+                        <option value="all">All statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="category-select">Category</label>
+                    <select id="category-select" name="category">
+                        <option value="all">All categories</option>
+                    </select>
+                </div>
+                <div class="button-row">
+                    <button class="button button--secondary" type="button" id="clear-filters">Clear filters</button>
+                    <button class="button" type="button" id="reload-button">Reload data</button>
+                </div>
+            </form>
+            <p class="result-count" id="result-count"></p>
+            <p class="selected-note" id="selected-note"></p>
+
+            <div class="state-box" id="state-box" hidden>
+                <p class="state-message" id="state-message"></p>
+                <div class="button-row">
+                    <button class="button" type="button" id="retry-button" hidden>Try again</button>
+                    <button class="button" type="button" id="state-clear-button" hidden>Clear filters</button>
+                </div>
+            </div>
+
+            <div class="card-grid" id="assignment-list"></div>
+        </section>
+
+        <section class="section" id="apply">
+            <h2>Apply to the Program</h2>
+            <p>Fields marked with * are required. This page has no server, so the form does not send your answers anywhere.</p>
+            <form class="apply-form" id="apply-form">
+                <div class="field">
+                    <label for="full-name">Full name *</label>
+                    <input type="text" id="full-name" name="full_name" placeholder="Enter your full name" autocomplete="name" minlength="3" maxlength="50" pattern="[A-Za-z ]+" title="Use letters and spaces only." required>
+                    <p class="field-error"></p>
+                </div>
+                <div class="field">
+                    <label for="email-address">Email address *</label>
+                    <input type="email" id="email-address" name="email_address" placeholder="example@gmail.com" autocomplete="email" required>
+                    <p class="field-error"></p>
+                </div>
+                <div class="field">
+                    <label for="track">Track *</label>
+                    <select id="track" name="track" required>
+                        <option value="" selected>-- Select a track --</option>
+                        <option value="web-development">Web Development</option>
+                        <option value="software-testing">Software Testing</option>
+                        <option value="devops">DevOps</option>
+                    </select>
+                    <p class="field-error"></p>
+                </div>
+                <div class="field">
+                    <label for="start-date">Available start date *</label>
+                    <input type="date" id="start-date" name="start_date" min="2026-11-16" max="2027-03-31" required>
+                    <p class="field-error"></p>
+                </div>
+                <div class="field">
+                    <label for="message">Why do you want to join? *</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Write at least 10 characters" minlength="10" maxlength="300" required></textarea>
+                    <p class="field-error"></p>
+                </div>
+                <div class="field field--check">
+                    <input type="checkbox" id="terms-accepted" name="terms" value="accepted" required>
+                    <label for="terms-accepted">I confirm that my answers are correct *</label>
+                    <p class="field-error"></p>
+                </div>
+                <div class="button-row">
+                    <button class="button" type="submit">Send application</button>
+                    <button class="button button--secondary" type="reset">Reset form</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <dialog class="details-dialog" id="details-dialog">
+        <div class="dialog-body">
+            <h2 id="dialog-title"></h2>
+            <p><span id="dialog-badge"></span></p>
+            <ul class="dialog-facts">
+                <li>Category: <span id="dialog-category"></span></li>
+                <li>Due date: <span id="dialog-due"></span></li>
+                <li>Mentor: <span id="dialog-mentor"></span></li>
+            </ul>
+            <p id="dialog-summary"></p>
+            <p>
+                <label for="dialog-progress">Progress: <span id="dialog-progress-text"></span></label><br>
+                <progress id="dialog-progress" max="100" value="0">0%</progress>
+            </p>
+            <button class="button" type="button" id="dialog-close">Close</button>
+        </div>
+    </dialog>
+
+    <div class="toast-area" id="toast-area"></div>
+    <noscript>
+        <p class="message">This page needs JavaScript to load the assignments.</p>
+    </noscript>
+    <footer class="site-footer">
+        <p><small>&copy; 2026 Touseef Ahmed</small></p>
+    </footer>
+</body>
+</html>
