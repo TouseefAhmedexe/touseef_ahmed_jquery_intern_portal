@@ -2,6 +2,7 @@ import {
     countByStatus,
     filterAssignments,
     formatDate,
+    formatSummaryText,
     getCategories,
     getStatusClass,
     normalizeAssignment,
@@ -24,8 +25,8 @@ const $els = {};
 
 let assignments = [];
 let skippedCount = 0;
+let isLoading = false;
 
-// Vanilla: getElementById returns null for a missing element. jQuery returns an empty set and fails silently, so this check is needed.
 function $required(selector) {
     const $found = $(selector);
     if ($found.length === 0) {
@@ -34,7 +35,6 @@ function $required(selector) {
     return $found;
 }
 
-// Each element is queried once and kept. Repeating $("#id") in every function is a common jQuery mistake.
 function cacheElements() {
     $els.list = $required("#assignment-list");
     $els.summary = $required("#summary-text");
@@ -85,7 +85,6 @@ function showLoading() {
 }
 
 function buildCard(assignment) {
-    // Vanilla: createElement, then set properties, then append. jQuery builds elements with $("<tag>", props) and chains append().
     const $badge = $("<span>").addClass(getStatusClass(assignment.status)).text(assignment.status);
     const $header = $("<div>").addClass("card-header").append($("<p>").addClass("card-category").text(assignment.category), $badge);
     const $facts = $("<ul>").addClass("card-facts").append(
@@ -116,7 +115,6 @@ function fillCategories() {
 
     $els.categorySelect.empty().append($("<option>", { value: "all", text: "All categories" }));
 
-    // $.each passes (index, item). Array forEach passes (item, index).
     $.each(categories, function (index, category) {
         $els.categorySelect.append($("<option>", { value: category, text: category }));
     });
@@ -126,11 +124,7 @@ function fillCategories() {
 
 function renderSummary() {
     const counts = countByStatus(assignments);
-    const skipped = skippedCount === 0
-        ? ""
-        : ` ${pluralize(skippedCount, "record")} could not be used and ${skippedCount === 1 ? "was" : "were"} skipped.`;
-
-    $els.summary.text(`${pluralize(assignments.length, "assignment")}: ${counts.Completed} completed, ${counts["In Progress"]} in progress, ${counts.Pending} pending.${skipped}`);
+    $els.summary.text(formatSummaryText(assignments.length, counts, skippedCount));
 }
 
 function readFilters() {
@@ -199,9 +193,13 @@ function getAjaxMessage(jqXHR, textStatus) {
 }
 
 function loadAssignments() {
+    if (isLoading) {
+        return;
+    }
+
+    isLoading = true;
     showLoading();
 
-    // Vanilla: await fetch(), then check response.ok. jqXHR has done(), fail() and always() instead of then(), catch() and finally(), and a 404 already counts as a failure.
     return $.ajax({ url: "data/assignments.json", dataType: "json", cache: false })
         .done(function (data) {
             handleLoaded(data);
@@ -210,12 +208,12 @@ function loadAssignments() {
             setState("error", getAjaxMessage(jqXHR, textStatus), "retry");
         })
         .always(function () {
+            isLoading = false;
             $els.reloadButton.prop("disabled", false);
         });
 }
 
 function showToast(message, kind = "info") {
-    // Vanilla: createElement, append, setTimeout to remove, and a CSS animation. One jQuery chain does all of it.
     $("<div>")
         .addClass(`toast toast--${kind}`)
         .text(message)
@@ -288,7 +286,6 @@ function openDetails(id) {
     $els.dialogProgress.prop("value", assignment.progress);
     $els.dialogProgressText.text(`${assignment.progress}%`);
 
-    // jQuery has no dialog methods. get(0) returns the native element, so showModal() can be called.
     $els.dialog.get(0).showModal();
 }
 
@@ -304,7 +301,6 @@ function bindDialogEvents() {
     });
 }
 
-// The Vanilla version of this function is in js/vanilla/migrated.js
 function selectCard($card) {
     $card.addClass("is-selected").siblings(".card").removeClass("is-selected");
     $els.note.text(`Selected: ${$card.find(".card-title").text()}`);
@@ -312,7 +308,6 @@ function selectCard($card) {
 
 function toggleDetails($card, $button) {
     const $details = $card.find(".card-details");
-    // slideToggle writes inline display and height styles.
     $details.stop(true, true).slideToggle(250, function () {
         $button.text($details.is(":visible") ? "Show less" : "Show more");
     });
@@ -324,7 +319,6 @@ function collapseAll() {
 }
 
 function bindListEvents() {
-    // Vanilla: list.addEventListener("click", ...) and event.target.closest(selector). jQuery: on("click", selector, fn), and this is the matched element.
     $els.list.on("click", "[data-action]", function () {
         const $button = $(this);
         const $card = $button.closest(".card");
@@ -347,7 +341,6 @@ function bindListEvents() {
 
 function validateForm($form) {
     let isValid = true;
-    // Vanilla: [...form.elements].forEach. In each(), return; continues to the next element.
     $form.find(":input").each(function () {
         if (!this.willValidate) {
             return;
@@ -368,7 +361,6 @@ function bindFormEvents() {
         event.preventDefault();
 
         const $form = $(this);
-        // The CSS reads the attribute. $form.data("submitted", true) would not change the attribute, so attr() is used.
         $form.attr("data-submitted", "true");
 
         if (!validateForm($form)) {
@@ -376,7 +368,6 @@ function bindFormEvents() {
             return;
         }
 
-        // Vanilla: new FormData(form). serializeArray() returns [{ name, value }] for every enabled control.
         const answers = {};
         $.each($form.serializeArray(), function (index, field) {
             answers[field.name] = field.value;

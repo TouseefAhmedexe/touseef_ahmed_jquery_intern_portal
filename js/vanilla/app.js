@@ -86,19 +86,29 @@ function handleListClick(event) {
         return;
     }
 
-    const button = event.target.closest("[data-action='view']");
-    if (button === null) {
+    const actionButton = event.target.closest("[data-action]");
+    if (actionButton === null) {
         selectCard(card);
         return;
     }
 
+    const action = actionButton.dataset.action;
     const assignment = assignments.find((item) => item.id === card.dataset.id);
-    if (assignment === undefined) {
-        ui.showToast("That assignment could not be found.", "error");
-        return;
-    }
 
-    ui.openDetails(assignment);
+    if (action === "view") {
+        if (assignment === undefined) {
+            ui.showToast("That assignment could not be found.", "error");
+            return;
+        }
+        ui.openDetails(assignment);
+    } else if (action === "toggle") {
+        const details = card.querySelector(".card-details");
+        if (details !== null) {
+            const isVisible = details.style.display === "block";
+            details.style.display = isVisible ? "none" : "block";
+            actionButton.textContent = isVisible ? "Show more" : "Show less";
+        }
+    }
 }
 
 function handleFormSubmit(event) {

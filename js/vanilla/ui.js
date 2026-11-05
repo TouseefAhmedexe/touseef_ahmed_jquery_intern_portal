@@ -1,4 +1,4 @@
-import { formatDate, getStatusClass, pluralize } from "../shared/data-utils.js";
+import { formatDate, formatSummaryText, getStatusClass, pluralize } from "../shared/data-utils.js";
 
 const TOAST_MS = 4000;
 
@@ -59,7 +59,17 @@ function buildCard(assignment) {
     const facts = makeElement("ul", "card-facts");
     const progress = makeElement("progress", "", `${assignment.progress}%`);
     const actions = makeElement("div", "card-actions");
+    
     const viewButton = makeElement("button", "button button--small", "View details");
+    viewButton.type = "button";
+    viewButton.dataset.action = "view";
+
+    const toggleButton = makeElement("button", "button button--small button--secondary", "Show more");
+    toggleButton.type = "button";
+    toggleButton.dataset.action = "toggle";
+
+    const details = makeElement("div", "card-details");
+    details.appendChild(makeElement("p", "", assignment.summary || "No description yet."));
 
     card.dataset.id = assignment.id;
 
@@ -77,11 +87,9 @@ function buildCard(assignment) {
     progress.max = 100;
     progress.value = assignment.progress;
 
-    viewButton.type = "button";
-    viewButton.dataset.action = "view";
-    actions.append(viewButton);
+    actions.append(viewButton, toggleButton);
 
-    card.append(header, makeElement("h3", "card-title", assignment.title), facts, progress, actions);
+    card.append(header, makeElement("h3", "card-title", assignment.title), facts, progress, actions, details);
     return card;
 }
 
@@ -126,11 +134,7 @@ export function renderAssignments(assignments) {
 }
 
 export function renderSummary(counts, total, skippedCount) {
-    const skipped = skippedCount === 0
-        ? ""
-        : ` ${pluralize(skippedCount, "record")} could not be used and ${skippedCount === 1 ? "was" : "were"} skipped.`;
-
-    elements.summary.textContent = `${pluralize(total, "assignment")}: ${counts.Completed} completed, ${counts["In Progress"]} in progress, ${counts.Pending} pending.${skipped}`;
+    elements.summary.textContent = formatSummaryText(total, counts, skippedCount);
 }
 
 export function showCount(shown, total) {

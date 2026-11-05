@@ -1,24 +1,24 @@
-# Intern Portal: Vanilla JavaScript and jQuery
+# Intern Portal: Vanilla JavaScript and jQuery 4.0.0
 
-A small internship portal written first in vanilla JavaScript (index.html), with selected
-features rebuilt in jQuery (jquery.html). Task 15 of my Bloomrix internship.
+A small internship portal written first in vanilla JavaScript (`index.html`), with selected
+features rebuilt in jQuery 4.0.0 (`jquery.html`). Task 15 of my Bloomrix internship.
 No framework is used. All assignment data is sample data, and the form has no server.
 
 ## Files
-- index.html - the vanilla JavaScript version
-- jquery.html - the jQuery version
-- style.css - shared styling
-- data/assignments.json - sample assignment data
-- lib/jquery-3.7.1.min.js - jQuery, kept locally
-- js/shared - code used by both versions: data functions, debounce, storage and theme
-- js/vanilla - fetch, DOM rendering and events written without a library
-- js/jquery/app.js - the jQuery version of the selected features
+- `index.html` - the vanilla JavaScript version
+- `jquery.html` - the jQuery 4.0.0 version
+- `style.css` - shared styling
+- `data/assignments.json` - sample assignment data
+- `lib/jquery-4.0.0.min.js` - jQuery 4.0.0, kept locally
+- `js/shared` - code used by both versions: data functions, debounce, storage and theme
+- `js/vanilla` - fetch, DOM rendering and events written without a library
+- `js/jquery/app.js` - the jQuery version of the selected features
 
 ## Features in both versions
-Assignment list with status badges and progress, search with debounce, status and category
-filters, a details dialog, an application form with validation messages, and toast
-notifications. The vanilla version also has a navigation bar and a theme preference saved
-in localStorage. The jQuery version reads and changes the same saved theme.
+Assignment list with status badges, per-card progress bars, inline description toggles ("Show more"),
+search with debounce, status and category filters, a details dialog, an application form with validation
+messages, and toast notifications. The vanilla version also has a navigation bar and a theme preference
+saved in localStorage. The jQuery version reads and changes the same saved theme.
 
 ## Which jQuery features were used
 - Document ready, selectors, text(), val(), attr(), prop(), data()
@@ -31,7 +31,7 @@ in localStorage. The jQuery version reads and changes the same saved theme.
 - Chaining
 
 ## Vanilla and jQuery side by side
-| Job | Vanilla | jQuery |
+| Job | Vanilla | jQuery 4.0.0 |
 | --- | --- | --- |
 | Select | getElementById, querySelector | $("#id"), $(".class") |
 | Text | textContent | text() |
@@ -58,5 +58,12 @@ textContent.
 - jQuery has no dialog methods, so the native element is used through get(0).
 - Plain JavaScript is enough for new code. jQuery is useful when maintaining older code.
 
+## DevTools Verification Checklist
+- **Console Panel:** Verify no uncaught runtime errors exist on either `index.html` or `jquery.html`.
+- **Network Panel:** Verify `data/assignments.json` loads cleanly (`200 OK`) and that `jquery-4.0.0.min.js` is loaded locally.
+- **Application Panel -> Local Storage:** Check `bloomrix.portal.theme` value updates when toggling theme.
+- **DOM Inspection:** Observe dynamic creation of cards, badges, and modal elements.
+
 ## How to run
-Open the folder in Visual Studio Code and use Live Server. Modules and fetch do not work when an HTML file is opened by double-clicking it
+Open the folder in Visual Studio Code and use Live Server. Modules and fetch do not work when
+an HTML file is opened by double-clicking it.

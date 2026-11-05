@@ -4,6 +4,14 @@ export function pluralize(count, word) {
     return `${count} ${word}${count === 1 ? "" : "s"}`;
 }
 
+export function formatSummaryText(assignmentsCount, counts, skippedCount) {
+    const skipped = skippedCount === 0
+        ? ""
+        : ` ${pluralize(skippedCount, "record")} could not be used and ${skippedCount === 1 ? "was" : "were"} skipped.`;
+
+    return `${pluralize(assignmentsCount, "assignment")}: ${counts.Completed || 0} completed, ${counts["In Progress"] || 0} in progress, ${counts.Pending || 0} pending.${skipped}`;
+}
+
 export function normalizeAssignment(record) {
     if (record === null || typeof record !== "object") {
         return null;
@@ -77,7 +85,8 @@ export function getCategories(assignments) {
 
 export function countByStatus(assignments) {
     return STATUSES.reduce((counts, status) => {
-        return { ...counts, [status]: assignments.filter((assignment) => assignment.status === status).length };
+        counts[status] = assignments.filter((assignment) => assignment.status === status).length;
+        return counts;
     }, {});
 }
 
